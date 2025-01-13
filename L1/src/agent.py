@@ -40,21 +40,7 @@ class TrivialVacuumEnvironment:
         self.action_space = ["Right", "Left", "Suck", "Stay"]
 
     def execute_action(self, agent: Agent, action):
-        # if self.status[agent.location] == "Clean":
-        #     match agent.location:
-        #         case (0,0):
-        #             agent.location =  loc_B
-        #         case (1,0):
-        #             agent.location = loc_A
-        #     agent.performance -= 1
-        # elif self.status[agent.location] == "Dirty":
-        #     self.status[]
-        #     match agent.location:
-        #         case (0,0):
-        #             agent.location =  loc_B
-        #         case (1,0):
-        #             agent.location = loc_A
-        #     agent.performance -= 1
+
         """
         Change the environment based on the agent's action.
         moving from left to right costs 1 point from the agent's performance
@@ -81,13 +67,14 @@ class TrivialVacuumEnvironment:
         match action:
             case "Right":
                 agent.location = loc_B
+                agent.performance -= 1
             case "Left":
                 agent.location = loc_A
+                agent.performance -= 1
             case "Suck":
-                if self.status[agent.location] != "Clean":
-                    agent.performance += 10
+                if self.status[agent.location] == "Dirty":
+                    agent.performance += 7
                 self.status[agent.location] = "Clean"
-                agent.performance -= 7
             case "Stay":
                 agent.location = agent.location
 
@@ -147,10 +134,13 @@ class TrivialVacuumEnvironment:
         if self.status[agent.location] == "Clean":
             if agent.location == loc_A:
                 self.execute_action(agent, "Right")
+                return "Right"
             else:
                 self.execute_action(agent, "Left")
+                return "Left"
         elif self.status[agent.location] == "Dirty":
             self.execute_action(agent, "Suck")
+            return "Suck"
         ...
 
     def model_based_agent(self, agent: AgentMemory) -> str:
@@ -187,13 +177,18 @@ class TrivialVacuumEnvironment:
         >>> action = env.model_based_agent(agent)
         >>> assert action == 'Stay', f"agent should stay at B since both locations are clean, however your action is {action}"
         """
+
         if self.status[agent.location] == "Clean" and agent.location not in agent.visited:
-            agent.visited.update(agent.location)
-            if agent.location == loc_A:
+            agent.visited.update([agent.location])
+            if len(agent.visited) == 2:
+                return "Stay"
+            elif agent.location == loc_A:
                 self.execute_action(agent, "Right")
+                return "Right"
             else:
                 self.execute_action(agent, "Left")
+                return "Left"
         elif self.status[agent.location] == "Dirty":
-            agent.visited.update(agent.location)
             self.execute_action(agent, "Suck")
+            return "Suck"
         ...
