@@ -22,7 +22,8 @@ class Node:
         Args:
             end (Node): the end node
         """
-        # TODO your code here
+        self.children.append(end)
+        end.parents.append(self)
         ...
 
     def add_undirected_edge(self, end: "Node"):
@@ -34,7 +35,10 @@ class Node:
         Args:
             end (Node): the end node
         """
-        # TODO your code here
+        self.children.append(end)
+        self.parents.append(end)
+        end.children.append(self)
+        end.parents.append(self)
         ...
 
     def __repr__(self):
@@ -84,7 +88,14 @@ class Graph:
             end (Node): the end node
             directed (bool): whether the edge is directed or not, default is True
         """
-        # TODO your code here
+        if start not in self.nodes:
+            self.nodes.add(start)
+        if end not in self.nodes:
+            self.nodes.add(end)
+        if directed is True:
+            Node.add_directed_edge(start, end)
+        else:
+            Node.add_undirected_edge(start, end)
         ...
 
 
@@ -110,7 +121,14 @@ class Tree(Graph):
 
         Returns: (bool) whether the tree is valid or not
         """
-        # TODO your code here
+        if not self.root:
+            return False
+        count = 0
+        for nodes in self.nodes:
+            count += len(nodes.children)
+        if count > len(self.nodes) + 1:
+            return False
+        return True
         ...
 
 
@@ -153,7 +171,16 @@ class BinarySearchTree(Tree):
             self.nodes.add(node)
             return
         current = self.root
-        # TODO your code here
+        while current.right and current.left:
+            if current.value > node.value:
+                current = current.left
+            else:
+                current = current.right
+        if current.value > node.value:
+            BinaryTreeNode.add_left_child(node)
+        else:
+            BinaryTreeNode.add_right_child(node)
+
         ...
 
     def validate_bst(self) -> bool:
@@ -167,5 +194,7 @@ class BinarySearchTree(Tree):
             - The left child of a node must be less than the parent node
             - The right child of a node must be greater than the parent node
         """
-        # TODO your code here
+        if not BinarySearchTree.validate_tree():
+            return False
+        
         ...
