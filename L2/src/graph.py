@@ -126,7 +126,7 @@ class Tree(Graph):
         count = 0
         for nodes in self.nodes:
             count += len(nodes.children)
-        if count > len(self.nodes) + 1:
+        if count > len(self.nodes) - 1:
             return False
         return True
         ...
@@ -177,9 +177,9 @@ class BinarySearchTree(Tree):
             else:
                 current = current.right
         if current.value > node.value:
-            BinaryTreeNode.add_left_child(node)
+            BinaryTreeNode.add_left_child(current, node)
         else:
-            BinaryTreeNode.add_right_child(node)
+            BinaryTreeNode.add_right_child(current, node)
 
         ...
 
@@ -194,7 +194,28 @@ class BinarySearchTree(Tree):
             - The left child of a node must be less than the parent node
             - The right child of a node must be greater than the parent node
         """
-        if not BinarySearchTree.validate_tree():
-            return False
-        
+        visited = []
+        queue = [self.root]
+        count = 1
+        found = False
+        while queue:
+            node = queue.pop(0)
+            visited.append(node)
+            for neighbor in sorted(node.children, key=lambda x: x.value):
+                count += 1
+                if len(sorted(node.children, key=lambda x: x.value)) > 2:
+                    return False
+                if not node.left:
+                    continue 
+                elif node.left.value > node.value:
+                    return False
+                if not node.right:
+                    continue
+                elif node.right.value < node.value:
+                    return False
+                if neighbor not in visited and neighbor not in queue:
+                    queue.append(neighbor)
+            # END SOLUTION
+        return True
+
         ...
