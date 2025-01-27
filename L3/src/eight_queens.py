@@ -56,6 +56,32 @@ def is_safe_row_diag(board, row, col) -> bool:
     """
     # TODO
 
+    ## Upper Diagonal
+    curr_row = row
+    curr_col = col
+    while curr_row < len(board) and curr_col > 0:
+        if board[curr_row][curr_col] == 1:
+            return False
+        curr_row += 1
+        curr_col -= 1
+
+    ## Lower Diagonal
+    curr_row = row
+    curr_col = col
+    while curr_row >= 0 and curr_col >= 0:
+        if board[curr_row][curr_col] == 1:
+            return False
+        curr_row -= 1
+        curr_col -= 1
+
+    ## Row 
+    curr_row = row
+    for i in range(col):
+        if board[curr_row][i] == 1:
+            return False
+
+    return True
+
 
 def solve_8_queens(board: List[List[int]], col: int) -> bool:
     """
@@ -71,7 +97,22 @@ def solve_8_queens(board: List[List[int]], col: int) -> bool:
         bool: whether the solution exists
     """
     # TODO
+    if len(board) == 2 or len(board) == 3:
+        return False
+    
+    if col == len(board):
+        return True
 
+    for curr_row in range(len(board)):
+        if is_safe_row_diag(board, curr_row, col):
+            #print(col)
+            board[curr_row][col] = 1
+            if solve_8_queens(board, col + 1):
+                return True
+            board[curr_row][col] = 0
+
+    return False
+    
 
 def update_board():
     """
