@@ -17,6 +17,9 @@ def update(q: float, r: float, k: int) -> float:
     """
     # Note: since k is the number of times the action has been taken before this update, we need to add 1 to k before using it in the formula.
     # TODO
+    k += 1
+    new_Q = q + 1/(k)*(r-q)
+    return new_Q
 
 
 def greedy(q_estimate: np.ndarray) -> int:
@@ -29,7 +32,9 @@ def greedy(q_estimate: np.ndarray) -> int:
     Returns:
     int: The index of the action with the highest Q-value.
     """
+    
     # TODO
+    return np.argmax(q_estimate)
 
 
 def egreedy(q_estimate: np.ndarray, epsilon: float) -> int:
@@ -45,6 +50,10 @@ def egreedy(q_estimate: np.ndarray, epsilon: float) -> int:
     int: The index of the selected action.
     """
     # TODO
+    n_arms = len(q_estimate)
+    if np.random.random() < (1-epsilon):
+        return np.argmax(q_estimate)
+    return np.random.randint(0,n_arms)
 
 
 def empirical_egreedy(epsilon: float, n_trials: int, n_arms: int, n_plays: int) -> List[List[float]]:
@@ -64,7 +73,19 @@ def empirical_egreedy(epsilon: float, n_trials: int, n_arms: int, n_plays: int) 
         List[List[float]]: A list of rewards for each play in each trial.
     """
     rewards = []  # stores the rewards for each trial
-
     # TODO
-
-    return rewards
+    rewards = [[None] * n_trials for _ in range(n_plays)]
+    random_number = np.random.default_rng()
+    for i in range(n_trials):
+        mean = np.random.normal(0.0, 1.0, n_arms)
+        q_val = np.zeros(n_arms)
+        num_pulled = np.zeros(n_arms)
+        for j in range(n_plays):
+            action = egreedy(q_val, epsilon)
+            action_reward = np.mean(np.random.normal(mean[action], 1))
+            ##rewards[action].append(action_reward)
+            num_pulled[action]+=1
+            new_q = update(q_val[action], action_reward, num_pulled[action])
+            print(action)
+            q_val[int(action)] += new_q
+        return rewards
