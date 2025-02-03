@@ -54,8 +54,8 @@ class TestBandits(unittest.TestCase):
     def test_empirical_egreedy_return_type(self):
         rewards = empirical_egreedy(0.1, 2, 3, 5)
         self.assertIsInstance(rewards, list)
-        self.assertEqual(len(rewards), 5, "rewards should have 5 trails")
-        self.assertEqual(len(rewards[0]), 2, "each trails should have 3 runs")
+        self.assertEqual(len(rewards), 2, "rewards should have 5 trails")
+        self.assertEqual(len(rewards[0]), 5, "each trails should have 3 runs")
 
     def test_empirical_egreedy_dimensions(self):
         n_trials, n_plays = 2, 5

@@ -74,7 +74,7 @@ def empirical_egreedy(epsilon: float, n_trials: int, n_arms: int, n_plays: int) 
     """
     rewards = []  # stores the rewards for each trial
     # TODO
-    rewards = [[None] * n_trials for _ in range(n_plays)]
+    rewards = [[None] * n_plays for _ in range(n_trials)]
     random_number = np.random.default_rng()
     for i in range(n_trials):
         mean = np.random.normal(0.0, 1.0, n_arms)
@@ -86,6 +86,6 @@ def empirical_egreedy(epsilon: float, n_trials: int, n_arms: int, n_plays: int) 
             ##rewards[action].append(action_reward)
             num_pulled[action]+=1
             new_q = update(q_val[action], action_reward, num_pulled[action])
-            print(action)
+            #print(action)
             q_val[int(action)] += new_q
         return rewards
