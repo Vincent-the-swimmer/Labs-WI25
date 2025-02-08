@@ -22,6 +22,17 @@ def transition(state, action):
     int: The next state.
     """
     # TODO: Your code here
+    if action == 'right':
+        if state == 5:
+            return state
+        state += 1
+        return state
+    if action == 'left':
+        if state == 1:
+            return state
+        state -= 1
+        return state
+    return state
     ...
 
 
@@ -37,6 +48,9 @@ def reward(state, action):
     int: The reward.
     """
     # TODO: Your code here
+    if state == 4 and action == 'right':
+        return 10
+    return -1
     ...
 
 
@@ -66,6 +80,18 @@ def my_policy(state):
     str: The action chosen by the policy.
     """
     # TODO: Your code here
+    ran_num = np.random.uniform(0.0, 1.0)
+    if state == 1 or state == 5:
+        if ran_num <= 0.5:
+            return 'left'
+        return 'right'
+    if ran_num <= 0.3:
+        return 'left'
+    if ran_num > 0.3 and ran_num <= 0.6:
+        return 'stay'
+    if ran_num > 0.6:
+        return 'right'
+    print(ran_num)
     ...
 
         
@@ -94,6 +120,17 @@ def simulate_mdp(policy: Callable, initial_state=1, simulation_depth=20):
     
     for _ in range(simulation_depth):
         # TODO: Your code here
+        action = policy(current_state)
+        new_state = transition(current_state, action)
+
+        if current_state != new_state:
+            visited_history.append(new_state)
+            curr_reward = reward(current_state, action)
+            cumulative_reward += curr_reward
+            reward_history.append(curr_reward)
+
+        state_visits[new_state-1] += 1
+        current_state = new_state
         ...
 
     
@@ -102,6 +139,20 @@ def simulate_mdp(policy: Callable, initial_state=1, simulation_depth=20):
 
 def new_policy(state: List[int]) -> int:
     # TODO: Your code here
+    curr_x = state[0]
+    curr_y = state[1]
+    ran_num = np.random.uniform(0.0, 1.0)
+    if curr_x == 4 or curr_x == 4:
+        return curr_x
+    if curr_y < 3:
+        if ran_num <= 0.7:
+            return 0
+        return 1
+    
+    if ran_num <= 0.7:
+        return 3
+    return 2
+            
     ...
 
         
@@ -121,9 +172,28 @@ def simulate_maze_env(env: MazeEnv, policy: Callable, num_steps=20):
     state = env.reset()
     total_reward = 0
     path = [state]
-
+    curr_x = 0
+    curr_y = 0
     for _ in range(num_steps):
         # TODO: Your code here
+        action = policy(state)
+        if action == 0:
+            if curr_y < 4:
+                curr_y += 1
+        if action == 1:
+            if curr_y > 0:
+                curr_y -= 1
+        if action == 2:
+            if curr_x < 4:
+                curr_x += 1
+        if action == 3:
+            if curr_x > 0:
+                curr_x-= 1
+        path.append((curr_x, curr_y))
+        
+        state = [curr_x, curr_y]
+        if state == [4, 4]:
+            break
         ...
 
 
@@ -144,11 +214,13 @@ def q_learning(env: MazeEnv, episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1) -
     Returns:
         np.ndarray: The learned Q-table.
     """
-    q_table = ... # TODO: Your code here
+
+    q_table = np.zeros((env.size, env.size)) # TODO: Your code here
 
 
     for episode in range(episodes):
         # TODO: Your code here
+
         ...
 
 
