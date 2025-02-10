@@ -201,26 +201,33 @@ def q_learning(env: MazeEnv, episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1) -
         np.ndarray: The learned Q-table.
     """
 
-    q_table = np.zeros((env.size, env.size, env.size)) # TODO: Your code here
-
-    state = env.reset()
+    q_table = np.zeros((env.size, env.size, env.action_space.n)) # TODO: Your code here
+    i = 0
     ran_num = 0
     for episode in range(episodes):
         # TODO: Your code here
-        ran_num = np.random.uniform(0.0, 1.0)
-        if ran_num <= epsilon:
-            action = np.random.randint(0, 4)
-        else:
-            action = new_policy(state)
-        curr_state, curr_reward, heh, heh2 = env.step(action)
-        max_reward = -9999999999
-        # print(alpha)
-        # print(curr_reward)
-        # print(gamma)
-        # print(max_reward)
-        # print(q_table[state])
-        q_table[state] += alpha * (curr_reward + gamma*np.max(q_table[curr_state])-q_table[state])
-        state = curr_state
+        state = env.reset()
+        done = False
+        while not done:
+            x, y = state
+            ran_num = np.random.uniform(0.0, 1.0)
+            if ran_num <= epsilon:
+                action = env.action_space.sample() 
+            else:
+                 action = int(np.argmax(q_table[x, y, :]))
+            curr_state, curr_reward, done, heh2 = env.step(action)
+            curr_x, curr_y = curr_state
+            # print(alpha)
+            # i+=1
+            # print(i)
+            # print(state)
+            # print(curr_state)
+            # print(done)
+            # print(gamma)
+            # print(max_reward)
+            # print(q_table[state])
+            q_table[x, y, action] += alpha * (curr_reward + gamma*np.max(q_table[curr_x, curr_y, :])-q_table[x, y, action])
+            state = curr_state
 
         ...
 
@@ -251,7 +258,8 @@ def simulate_maze_env_q_learning(
     states = [state]  # List to store states
 
     while not done:
-        action = np.argmax(q_table[state]) # TODO: Your code here
+        x, y = state
+        action = np.argmax(q_table[x, y, :]) # TODO: Your code here
         state, _, done, _ = env.step(action)
         frames.append(
             env.render(mode="rgb_array").T
