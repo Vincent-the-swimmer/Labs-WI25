@@ -89,54 +89,47 @@ class WindyCliffWorld(gym.Env):
 env = WindyCliffWorld()
 
 def q_learning(env, num_episodes, alpha, gamma, epsilon):
-    # q_table = np.zeros([env.observation_space.n, env.action_space.n])
-
-    # # TODO: Implement Q-learning algorithm
-    # for i in range(num_episodes):
-    #     state = env.reset()
-    #     #print(state)
-    #     done = False
-    #     while not done:
-    #         x, y = WindyCliffWorld.index_to_state(env, state)
-    #         ran_num = np.random.uniform(0.0, 1.0)
-    #         if ran_num <= epsilon:
-    #             action = env.action_space.sample() 
-    #         else:
-    #              action = int(np.argmax(q_table[state]))
-    #         curr_state, curr_reward, done, heh2 = env.step(action)
-    #         curr_x, curr_y = WindyCliffWorld.index_to_state(env, curr_state)
-    #         q_table[state] += alpha * (curr_reward + gamma*np.max(q_table[curr_state])-q_table[state])
-    #         state = curr_state
-    # return q_table
-
     q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
+    # TODO: Implement Q-learning algorithm
     for i in range(num_episodes):
-        state = env.reset()  # Ensures compatibility with Gymnasium
+        state = env.reset()
         done = False
-
         while not done:
-            # Epsilon-greedy action selection
-            if np.random.uniform(0.0, 1.0) <= epsilon:
-                action = env.action_space.sample()
+            ran_num = np.random.uniform(0.0, 1.0)
+            if ran_num <= epsilon:
+                action = env.action_space.sample() 
             else:
-                action = int(np.argmax(q_table[state, :]))  # Select action based on Q-table
-            
-            # Take action and observe result
-            curr_state, curr_reward, done, _ = env.step(action)
-
-            # Update Q-table using the Q-learning update rule
-            q_table[state, action] += alpha * (curr_reward + gamma * np.max(q_table[curr_state, :]) - q_table[state, action])
-
-            # Move to the next state
+                 action = int(np.argmax(q_table[state, :]))
+            curr_state, curr_reward, done, heh2 = env.step(action)
+            q_table[state, action] += alpha * (curr_reward + gamma*np.max(q_table[curr_state, :])-q_table[state, action])
             state = curr_state
-
     return q_table
+
 
 def sarsa(env, num_episodes, alpha, gamma, epsilon):
     q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
     # TODO: Implement SARSA algorithm
+    for i in range(num_episodes):
+        state = env.reset()
+        done = False
+        ran_num_1 = np.random.uniform(0.0, 1.0)
+        if ran_num_1 <= epsilon:
+            action = env.action_space.sample() 
+        else:
+            action = int(np.argmax(q_table[state, :]))
+        while not done:
+            curr_state, curr_reward, done, heh2 = env.step(action)
+            ran_num_2 = np.random.uniform(0.0, 1.0)
+            if ran_num_2 <= epsilon:
+                curr_action = env.action_space.sample() 
+            else:
+                curr_action = int(np.argmax(q_table[state, :]))
+            q_table[state, action] += q_table[state, action] + alpha*(curr_reward + gamma*q_table[curr_state, curr_action] - q_table[state, action])
+            state = curr_state
+            action = curr_action
+
     
     return q_table
 
