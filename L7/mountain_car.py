@@ -70,13 +70,11 @@ def q_learning(env, num_episodes, alpha, gamma, epsilon, tile_coder):
             if ran_num <= epsilon:
                 action = env.action_space.sample() 
             else:
-                action = int(np.argmax(q_table[state, :]))
+                action = int(np.argmax(get_q_values(q_table, state)))
             curr_state, curr_reward, done, heh1, heh2= env.step(action)
             curr_state = discretize(curr_state, tile_coder)
             q_table[state, action] += alpha * (curr_reward + gamma*np.max(q_table[curr_state, :])-q_table[state, action])
             state = curr_state
-    return q_table
-    
     return q_table
 
 def sarsa(env, num_episodes, alpha, gamma, epsilon, tile_coder):
@@ -84,9 +82,33 @@ def sarsa(env, num_episodes, alpha, gamma, epsilon, tile_coder):
 
    # TODO: Implement SARSA algorithm
    # This will be slightly different from the WindyCliffWorld environment, in that the state is continuous
-    # and you are using the tile coder to discretize the state space.
-    
+   # # and you are using the tile coder to discretize the state space.
+    for i in range(num_episodes):
+        state, _ = env.reset()
+        done = False
+        state = discretize(state, tile_coder)
+
+        ran_num_1 = np.random.uniform(0.0, 1.0)
+        if ran_num_1 <= epsilon:
+            action = env.action_space.sample() 
+        else:
+            action = int(np.argmax(get_q_values(q_table, state)))
+
+        while not done:
+            curr_state, curr_reward, done, heh1, heh2 = env.step(action)
+            ran_num_2 = np.random.uniform(0.0, 1.0)
+            if ran_num_2 <= epsilon:
+                curr_action = env.action_space.sample() 
+            else:
+                curr_action = int(np.argmax(get_q_values(q_table, state)))
+
+            curr_state = discretize(curr_state, tile_coder)
+            q_table[state, action] += alpha*(curr_reward + gamma*q_table[curr_state, curr_action] - q_table[state, action])
+            state = curr_state
+            action = curr_action  
+
     return q_table
+    
 
 def visualize_policy(env, q_table, tile_coder, video_dir, filename='q_learning'):
     env = RecordVideo(env, video_folder=video_dir, name_prefix=filename)
@@ -104,13 +126,13 @@ def visualize_policy(env, q_table, tile_coder, video_dir, filename='q_learning')
 # Example usage:
 
 # Running Q-Learning
-env = gym.make('MountainCar-v0', render_mode='rgb_array')
-tile_coder = TileCoder(n_tilings=8, n_bins=(10, 10), low=env.observation_space.low, high=env.observation_space.high)
-q_table = q_learning(env, num_episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.1, tile_coder=tile_coder)
-visualize_policy(env, q_table, tile_coder, video_dir='./videos', filename='q_learning_mountain_car')
-
-# Running SARSA
 # env = gym.make('MountainCar-v0', render_mode='rgb_array')
 # tile_coder = TileCoder(n_tilings=8, n_bins=(10, 10), low=env.observation_space.low, high=env.observation_space.high)
-# q_table = sarsa(env, num_episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.1, tile_coder=tile_coder)
-# visualize_policy(env, q_table, tile_coder, video_dir='./videos', filename='sarsa_mountain_car')
+# q_table = q_learning(env, num_episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.1, tile_coder=tile_coder)
+# visualize_policy(env, q_table, tile_coder, video_dir='./videos', filename='q_learning_mountain_car')
+
+# Running SARSA
+env = gym.make('MountainCar-v0', render_mode='rgb_array')
+tile_coder = TileCoder(n_tilings=8, n_bins=(10, 10), low=env.observation_space.low, high=env.observation_space.high)
+q_table = sarsa(env, num_episodes=1000, alpha=0.1, gamma=0.99, epsilon=0.1, tile_coder=tile_coder)
+visualize_policy(env, q_table, tile_coder, video_dir='./videos', filename='sarsa_mountain_car')
