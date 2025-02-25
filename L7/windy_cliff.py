@@ -126,9 +126,9 @@ def sarsa(env, num_episodes, alpha, gamma, epsilon):
                 curr_action = env.action_space.sample() 
             else:
                 curr_action = int(np.argmax(q_table[state, :]))
-            q_table[state, action] += q_table[state, action] + alpha*(curr_reward + gamma*q_table[curr_state, curr_action] - q_table[state, action])
+            q_table[state, action] += alpha*(curr_reward + gamma*q_table[curr_state, curr_action] - q_table[state, action])
             state = curr_state
-            action = curr_action
+            action = curr_action  
 
     
     return q_table
@@ -151,14 +151,14 @@ def visualize_policy(env, q_table, filename='q_learning.gif'):
 # Example usage:
 
 # Testing Q-Learning
-env = WindyCliffWorld()
-q_table = q_learning(env, num_episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1)
-visualize_policy(env, q_table, filename='q_learning_windy_cliff.gif')
+# env = WindyCliffWorld()
+# q_table = q_learning(env, num_episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1)
+# visualize_policy(env, q_table, filename='q_learning_windy_cliff.gif')
 
 # Testing SARSA
-# env = WindyCliffWorld()
-# q_table = sarsa(env, num_episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1)
-# visualize_policy(env, q_table, filename='sarsa_windy_cliff.gif')
+env = WindyCliffWorld()
+q_table = sarsa(env, num_episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1)
+visualize_policy(env, q_table, filename='sarsa_windy_cliff.gif')
 
 # TODO: Run experiments with different hyperparameters and visualize the results
 # You should generate two plots:

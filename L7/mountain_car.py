@@ -61,6 +61,21 @@ def q_learning(env, num_episodes, alpha, gamma, epsilon, tile_coder):
     # TODO: Implement Q-learning algorithm
     # This will be slightly different from the WindyCliffWorld environment, in that the state is continuous
     # and you are using the tile coder to discretize the state space.
+    for i in range(num_episodes):
+        state, _ = env.reset()
+        done = False
+        state = discretize(state, tile_coder)
+        while not done:
+            ran_num = np.random.uniform(0.0, 1.0)
+            if ran_num <= epsilon:
+                action = env.action_space.sample() 
+            else:
+                action = int(np.argmax(q_table[state, :]))
+            curr_state, curr_reward, done, heh1, heh2= env.step(action)
+            curr_state = discretize(curr_state, tile_coder)
+            q_table[state, action] += alpha * (curr_reward + gamma*np.max(q_table[curr_state, :])-q_table[state, action])
+            state = curr_state
+    return q_table
     
     return q_table
 
