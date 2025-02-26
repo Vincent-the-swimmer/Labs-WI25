@@ -157,7 +157,7 @@ def visualize_policy(env, q_table, filename='q_learning.gif'):
 
 # Testing SARSA
 env = WindyCliffWorld()
-q_table = sarsa(env, num_episodes=500, alpha=0.1, gamma=0.99, epsilon=0.1)
+q_table = sarsa(env, num_episodes=500, alpha=0.2, gamma=0.99, epsilon=0.01)
 visualize_policy(env, q_table, filename='sarsa_windy_cliff.gif')
 
 # TODO: Run experiments with different hyperparameters and visualize the results
