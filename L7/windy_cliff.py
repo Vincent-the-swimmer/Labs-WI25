@@ -156,12 +156,29 @@ def visualize_policy(env, q_table, filename='q_learning.gif'):
 # visualize_policy(env, q_table, filename='q_learning_windy_cliff.gif')
 
 # Testing SARSA
-env = WindyCliffWorld()
-q_table = sarsa(env, num_episodes=500, alpha=0.2, gamma=0.99, epsilon=0.01)
-visualize_policy(env, q_table, filename='sarsa_windy_cliff.gif')
-
+# 
 # TODO: Run experiments with different hyperparameters and visualize the results
 # You should generate two plots:
 # 1. Total reward over episodes for different α and ε values for Q-learning
 # 2. Total reward over episodes for different α and ε values for SARSA
 # For each plot, use at least 2 different values for α and 2 different values for ε
+def experiment():
+    env = WindyCliffWorld()
+    alphas = [0.1, 0.9]
+    epsilons = [0.1, 0.5]
+    
+    for alpha in alphas:
+        for epsilon in epsilons:
+            rewards_q = q_learning(env, num_episodes=500, alpha=alpha, gamma=0.99, epsilon=epsilon)
+            rewards_sarsa = sarsa(env, num_episodes=500, alpha=alpha, gamma=0.99, epsilon=epsilon)
+
+            plt.plot(rewards_q, label=f'Q-learning α={alpha}, ε={epsilon}')
+            # plt.plot(rewards_sarsa, label=f'SARSA α={alpha}, ε={epsilon}')
+
+    plt.xlabel("Episodes")
+    plt.ylabel("Total Reward")
+    plt.title("Q-learning vs. SARSA Performance")
+    plt.legend()
+    plt.show()
+
+experiment()
